@@ -7,9 +7,10 @@ else:
     import tkinter as tk
 
 root = tk.Tk()
-#root.resizable(False, False)
-#root.geometry('800x600')
+root.resizable(False, False)
+root.geometry('318x480')
 root.title("MedDP")
 
-tk.Button(root, text="Placeholder Button").pack()
-tk.mainloop()
+
+
+root.mainloop()
