@@ -1,4 +1,6 @@
 import sys
+import data_preprocessor as dp
+
 if sys.version_info < (3, 0):
     # Python 2
     import Tkinter as tk
@@ -24,5 +26,4 @@ button.pack()
 
 query_result_label = tk.Label(root)
 query_result_label.pack()
-
 root.mainloop()
