@@ -11,7 +11,7 @@ labs = dp.process_labs()
 
 ## Helper Functions
 
-#Returns the sum of multiple query outputs, can be used for range constrainted queries.
+# Returns the sum of multiple query outputs, can be used for range constrainted queries.
 def aggregate_queries(results: list):
     result = [0]*len(results[0])
     for l in results:
@@ -19,7 +19,7 @@ def aggregate_queries(results: list):
     return result
 
 
-## The user asks the average values of field2 of patients grouped by field1
+# The user asks the average values of field2 of patients grouped by field1
 def query_type1(dataset_group_by, field1: str, dataset_result, field2: str):
     seqn_list1 = dataset_group_by.iloc[:]["SEQN"].tolist()
     seqn_list2 = dataset_result.iloc[:]["SEQN"].tolist()    #Find the SEQN here that also exist in seqn_list_1
@@ -32,7 +32,8 @@ def query_type1(dataset_group_by, field1: str, dataset_result, field2: str):
         if field not in fields_result:
             fields_result.append(field)
     num_groups = len(fields_result)
-    
+    interval = 0
+
     #If number of groups are too large, create intervals for better representation
     if num_groups > 10:
         num_groups = 10
@@ -63,10 +64,10 @@ def query_type1(dataset_group_by, field1: str, dataset_result, field2: str):
     for i in range(num_groups):
         if not counts[i] == 0:          #preventing divbyzero exception
             avg[i] = sums[i]/counts[i]
-    return avg
+    return avg, fields_result, interval
     
 
-#The user asks the distribution of field1 of patients who satisfy field2
+# The user asks the distribution of field1 of patients who satisfy field2
 def query_type2(dataset_group_by, field1: str, dataset_result, field2: str, req: int):
     seqn_list1 = dataset_group_by.iloc[:]["SEQN"].tolist()
     seqn_list2 = dataset_result.iloc[:]["SEQN"].tolist()    #Find the SEQN here that also exist in seqn_list_1
@@ -79,7 +80,8 @@ def query_type2(dataset_group_by, field1: str, dataset_result, field2: str, req:
         if field not in fields_result:
             fields_result.append(field)
     num_groups = len(fields_result)
-    
+    interval = 0
+
     #If number of groups are too large, create intervals for better representation
     if num_groups > 10:
         num_groups = 10
@@ -103,4 +105,4 @@ def query_type2(dataset_group_by, field1: str, dataset_result, field2: str, req:
                         break
                 j -= 1
                 counts[j] += 1
-    return counts
+    return counts, fields_result, interval
