@@ -7,9 +7,9 @@ import copy
 
 ## Read Database
 
-demographic = dp.process_demographic()
-examination = dp.process_examination()
-labs = dp.process_labs()
+demographic = dp.read_demographic()
+examination = dp.read_examination()
+labs = dp.read_labs()
 
 
 ## Helper Functions
