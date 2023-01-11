@@ -79,6 +79,57 @@ def avg_query(dataset_group_by, field1: str, dataset_result, field2: str):
             avg[i] = sums[i]/counts[i]
     return avg, fields_result, interval
 
+# The user asks the average values of field2 of patients grouped by age and the output is a bidirectional graph showing both genders' histograms.
+def avg_bi_histogram_query(dataset_result, field2: str):
+    seqn_list1 = demographic.iloc[:]["SEQN"].tolist()
+    seqn_list2 = dataset_result.iloc[:]["SEQN"].tolist()    #Find the SEQN here that also exist in seqn_list_1
+    field_list_age = demographic.iloc[:]["AGE"].tolist()       #Show the aggregate result of these values
+    field_list_gender = demographic.iloc[:]["GENDER"].tolist()
+    field_list2 = dataset_result.iloc[:][field2].tolist()   #Calculate the averages of these values
+    
+    #X Labels of the histogram / Labels for the pie chart
+    fields_result = []
+    for field in field_list_age:
+        if field not in fields_result:
+            fields_result.append(field)
+    num_groups = len(fields_result)
+    interval = 0
+
+    #If number of groups are too large, create intervals for better representation
+    if num_groups > 10:
+        num_groups = 10
+        interval = (max(fields_result)-min(fields_result))/num_groups
+        fields_result = [0]*num_groups
+        fields_result[0] = min(fields_result)
+        for k in range(1,10):
+            fields_result[k] = interval + fields_result[k-1]
+                    
+    counts = [[0]*num_groups]*2         #number of data points
+    sums = [[0]*num_groups]*2           #sum of data points 
+    for i in range(len(seqn_list1)):
+        seqn = seqn_list1[i]
+        if seqn in seqn_list2:
+            index_2 = seqn_list2.index(seqn)
+            val = field_list2[index_2]
+            if pd.notna(val):                   #skipping over NaN data
+                cat = field_list_age[i]
+                gender = field_list_gender[i]-1
+                j = 0
+                while cat >= fields_result[j]:  #which category the data point falls into
+                    j += 1
+                    if len(fields_result) <= j:
+                        break
+                j -= 1
+                counts[gender][j] += 1
+                sums[gender][j] += val
+    avg = [[0]*num_groups]*2
+    for i in range(num_groups):
+        if not counts[0][i] == 0:          #preventing divbyzero exception
+            avg[0][i] = sums[0][i]/counts[0][i]
+        if not counts[1][i] == 0:          #preventing divbyzero exception
+            avg[1][i] = sums[1][i]/counts[1][i]
+    return avg, fields_result, interval
+
 # The user asks the distribution of field1 of ALL patients
 def general_count_query(dataset_group_by, field1: str):
     seqn_list1 = dataset_group_by.iloc[:]["SEQN"].tolist()
@@ -117,7 +168,7 @@ def general_count_query(dataset_group_by, field1: str):
     counts = laplace(counts, sensitivity, epsilon)"""
     return counts, fields_result, interval
 
-# The user asks the distribution of field1of patients who are aged between min_age and max_age
+# The user asks the distribution of field1 of patients who are aged between min_age and max_age
 def age_range_query(dataset_group_by, field1: str, min_age: int, max_age: int):
     results = []
     for i in range(min_age,max_age+1):
