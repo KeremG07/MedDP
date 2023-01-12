@@ -46,6 +46,7 @@ def avg_query(dataset_group_by, field1: str, dataset_result, field2: str):
             fields_result.append(field)
     num_groups = len(fields_result)
     interval = 0
+    fields_result.sort()
 
     #If number of groups are too large, create intervals for better representation
     if num_groups > 10:
@@ -94,6 +95,7 @@ def avg_bi_histogram_query(dataset_result, field2: str):
             fields_result.append(field)
     num_groups = len(fields_result)
     interval = 0
+    fields_result.sort()
 
     #If number of groups are too large, create intervals for better representation
     if num_groups > 10:
@@ -142,7 +144,8 @@ def general_count_query(dataset_group_by, field1: str):
             fields_result.append(field)
     num_groups = len(fields_result)
     interval = 0
-    
+    fields_result.sort()
+
     #If number of groups are too large, create intervals for better representation
     if num_groups > 10:
         num_groups = 10
@@ -193,6 +196,7 @@ def single_constraint_query(dataset_group_by, field1: str, dataset_result, field
             fields_result.append(field)
     num_groups = len(fields_result)
     interval = 0
+    fields_result.sort()
 
     #If number of groups are too large, create intervals for better representation
     if num_groups > 10:
@@ -237,6 +241,7 @@ def double_constraint_query(dataset_group_by, field1: str, dataset_result, field
             fields_result.append(field)
     num_groups = len(fields_result)
     interval = 0
+    fields_result.sort()
 
     #If number of groups are too large, create intervals for better representation
     if num_groups > 10:
