@@ -27,6 +27,9 @@ def aggregate_queries(results: list):
     result = [0]*len(results[0])
     for l in results:
         result = np.add(result, l)
+    sensitivity = 2
+    epsilon = 0.1
+    result = laplace(result, sensitivity, epsilon)
     return result
 
 
@@ -74,6 +77,12 @@ def avg_query(dataset_group_by, field1: str, dataset_result, field2: str):
                 j -= 1
                 counts[j] += 1
                 sums[j] += val
+
+    sensitivity = 2
+    epsilon = 0.05
+    counts = laplace(counts, sensitivity, epsilon)
+    sums = laplace(sums, sensitivity, epsilon)
+
     avg = [0]*num_groups
     for i in range(num_groups):
         if not counts[i] == 0:          #preventing divbyzero exception
@@ -124,6 +133,13 @@ def avg_bi_histogram_query(dataset_result, field2: str):
                 j -= 1
                 counts[gender][j] += 1
                 sums[gender][j] += val
+    sensitivity = 2
+    epsilon = 0.025
+    counts[0] = laplace(counts[0], sensitivity, epsilon)
+    sums[0] = laplace(sums[0], sensitivity, epsilon)
+    counts[1] = laplace(counts[1], sensitivity, epsilon)
+    sums[1] = laplace(sums[1], sensitivity, epsilon)
+
     avg = [[0]*num_groups]*2
     for i in range(num_groups):
         if not counts[0][i] == 0:          #preventing divbyzero exception
@@ -166,9 +182,9 @@ def general_count_query(dataset_group_by, field1: str):
                 break
         j -= 1
         counts[j] += 1
-    """sensitivity = 2
+    sensitivity = 2
     epsilon = 0.1
-    counts = laplace(counts, sensitivity, epsilon)"""
+    counts = laplace(counts, sensitivity, epsilon)
     return counts, fields_result, interval
 
 # The user asks the distribution of field1 of patients who are aged between min_age and max_age
@@ -221,9 +237,10 @@ def single_constraint_query(dataset_group_by, field1: str, dataset_result, field
                         break
                 j -= 1
                 counts[j] += 1
-    """sensitivity = 2
-    epsilon = 0.1
-    counts = laplace(counts, sensitivity, epsilon)"""
+    if field2 != "AGE":
+        sensitivity = 2
+        epsilon = 0.1
+        counts = laplace(counts, sensitivity, epsilon)
     return counts, fields_result, interval
 
 # The user asks the distribution of field1 of patients who satisfy field2 and field3 (gender and race)
@@ -266,7 +283,7 @@ def double_constraint_query(dataset_group_by, field1: str, dataset_result, field
                         break
                 j -= 1
                 counts[j] += 1
-    """sensitivity = 2
+    sensitivity = 2
     epsilon = 0.1
-    counts = laplace(counts, sensitivity, epsilon)"""
+    counts = laplace(counts, sensitivity, epsilon)
     return counts, fields_result, interval
