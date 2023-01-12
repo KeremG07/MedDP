@@ -14,6 +14,14 @@ labs = dp.read_labs()
 
 ## Helper Functions
 
+# Correcting array values when they go to negative because of noise addition
+def correct_results(result):
+    for i in range(len(result)):   
+        if result[i] < 0:
+            result[i] = 0
+    return result
+
+
 # Applying differential privacy for count queries
 def laplace(counts, sensitivity, epsilon):
     noisy_counts = copy.deepcopy(counts)
@@ -29,8 +37,8 @@ def aggregate_queries(results: list):
         result = np.add(result, l)
     sensitivity = 2
     epsilon = 0.1
-    result = laplace(result, sensitivity, epsilon)
-    return result
+    result = correct_results(laplace(result, sensitivity, epsilon))
+    return correct_results(result)
 
 
 ## Queries
@@ -80,8 +88,8 @@ def avg_query(dataset_group_by, field1: str, dataset_result, field2: str):
 
     sensitivity = 2
     epsilon = 0.05
-    counts = laplace(counts, sensitivity, epsilon)
-    sums = laplace(sums, sensitivity, epsilon)
+    counts = correct_results(laplace(counts, sensitivity, epsilon))
+    sums = correct_results(laplace(sums, sensitivity, epsilon))
 
     avg = [0]*num_groups
     for i in range(num_groups):
@@ -135,10 +143,10 @@ def avg_bi_histogram_query(dataset_result, field2: str):
                 sums[gender][j] += val
     sensitivity = 2
     epsilon = 0.025
-    counts[0] = laplace(counts[0], sensitivity, epsilon)
-    sums[0] = laplace(sums[0], sensitivity, epsilon)
-    counts[1] = laplace(counts[1], sensitivity, epsilon)
-    sums[1] = laplace(sums[1], sensitivity, epsilon)
+    counts[0] = correct_results(laplace(counts[0], sensitivity, epsilon))
+    sums[0] = correct_results(laplace(sums[0], sensitivity, epsilon))
+    counts[1] = correct_results(laplace(counts[1], sensitivity, epsilon))
+    sums[1] = correct_results(laplace(sums[1], sensitivity, epsilon))
 
     avg = [[0]*num_groups]*2
     for i in range(num_groups):
@@ -184,7 +192,7 @@ def general_count_query(dataset_group_by, field1: str):
         counts[j] += 1
     sensitivity = 2
     epsilon = 0.1
-    counts = laplace(counts, sensitivity, epsilon)
+    counts = correct_results(laplace(counts, sensitivity, epsilon))
     return counts, fields_result, interval
 
 # The user asks the distribution of field1 of patients who are aged between min_age and max_age
@@ -240,7 +248,7 @@ def single_constraint_query(dataset_group_by, field1: str, dataset_result, field
     if field2 != "AGE":
         sensitivity = 2
         epsilon = 0.1
-        counts = laplace(counts, sensitivity, epsilon)
+        counts = correct_results(laplace(counts, sensitivity, epsilon))
     return counts, fields_result, interval
 
 # The user asks the distribution of field1 of patients who satisfy field2 and field3 (gender and race)
@@ -285,5 +293,5 @@ def double_constraint_query(dataset_group_by, field1: str, dataset_result, field
                 counts[j] += 1
     sensitivity = 2
     epsilon = 0.1
-    counts = laplace(counts, sensitivity, epsilon)
+    counts = correct_results(laplace(counts, sensitivity, epsilon))
     return counts, fields_result, interval
