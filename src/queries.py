@@ -81,6 +81,8 @@ def avg_query(dataset_group_by, field1: str, dataset_result, field2: str):
 
 
     # TODO: Find a good epsilon value by calling the epsilon experiment
+
+    # EXAMPLE WAY OF FINDING OPTIMAL EPSILON, IMPLEMENT THIS OR A WAY YOU CAME UP WITH ON EVERY QUERY
     sensitivity = 2 
     eps_values = [] #define a range of epsilon values that could work
     error_avg, error_mse, epsilon = exp.epsilon_experiment(counts, sensitivity, eps_values)
@@ -90,7 +92,7 @@ def avg_query(dataset_group_by, field1: str, dataset_result, field2: str):
     for i in range(num_groups):
         if not counts[i] == 0:          #preventing divbyzero exception
             avg[i] = sums[i]/counts[i]
-    return avg, fields_result, interval, epsilon #this will now return epsilon to UI to handle budgeting (?)
+    return avg, fields_result, interval, epsilon #this will now return epsilon to UI to handle budgeting
 
 # The user asks the average values of field2 of patients grouped by age and the output is a bidirectional graph showing both genders' histograms.
 def avg_bi_histogram_query(dataset_result, field2: str):

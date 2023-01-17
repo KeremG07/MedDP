@@ -39,6 +39,8 @@ def epsilon_experiment(counts, sensitivity, eps_values: list):
         error_mse.append(total_e_mse/40)
 
     # TODO: choose the best epsilon value here by looking at error values and return that as well
+
+    #FOR EXAMPLE CHOOSE THE SMALLEST EPSILON VALUE THAT GIVES LESS THAN 5% ERROR FOR BOTH ERROR MEASUREMENTS
     epsilon = 0
 
     return error_avg, error_mse, epsilon
