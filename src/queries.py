@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import math
 import data_preprocessor as dp
+import experiments as exp
 import copy
 
 
@@ -22,14 +23,6 @@ def correct_results(result):
     return result
 
 
-# Applying differential privacy for count queries
-def laplace(counts, sensitivity, epsilon):
-    noisy_counts = copy.deepcopy(counts)
-    for i in range(len(counts)):
-        noise = np.random.laplace(loc = 0, scale = sensitivity/epsilon)
-        noisy_counts[i] = round(noisy_counts[i] + noise)
-    return noisy_counts
-
 # Returns the sum of multiple query outputs, can be used for range constrainted queries.
 def aggregate_queries(results: list):
     result = [0]*len(results[0])
@@ -37,7 +30,7 @@ def aggregate_queries(results: list):
         result = np.add(result, l)
     sensitivity = 2
     epsilon = 0.1
-    result = correct_results(laplace(result, sensitivity, epsilon))
+    result = correct_results(exp.laplace(result, sensitivity, epsilon))
     return correct_results(result)
 
 
@@ -86,16 +79,18 @@ def avg_query(dataset_group_by, field1: str, dataset_result, field2: str):
                 counts[j] += 1
                 sums[j] += val
 
-    sensitivity = 2
-    epsilon = 0.05
-    counts = correct_results(laplace(counts, sensitivity, epsilon))
-    sums = correct_results(laplace(sums, sensitivity, epsilon))
 
+    # TODO: Find a good epsilon value by calling the epsilon experiment
+    sensitivity = 2 
+    eps_values = [] #define a range of epsilon values that could work
+    error_avg, error_mse, epsilon = exp.epsilon_experiment(counts, sensitivity, eps_values)
+    counts = correct_results(exp.laplace(counts, sensitivity, epsilon/2))
+    sums = correct_results(exp.laplace(sums, sensitivity, epsilon/2))
     avg = [0]*num_groups
     for i in range(num_groups):
         if not counts[i] == 0:          #preventing divbyzero exception
             avg[i] = sums[i]/counts[i]
-    return avg, fields_result, interval
+    return avg, fields_result, interval, epsilon #this will now return epsilon to UI to handle budgeting (?)
 
 # The user asks the average values of field2 of patients grouped by age and the output is a bidirectional graph showing both genders' histograms.
 def avg_bi_histogram_query(dataset_result, field2: str):
@@ -143,10 +138,10 @@ def avg_bi_histogram_query(dataset_result, field2: str):
                 sums[gender][j] += val
     sensitivity = 2
     epsilon = 0.025
-    counts[0] = correct_results(laplace(counts[0], sensitivity, epsilon))
-    sums[0] = correct_results(laplace(sums[0], sensitivity, epsilon))
-    counts[1] = correct_results(laplace(counts[1], sensitivity, epsilon))
-    sums[1] = correct_results(laplace(sums[1], sensitivity, epsilon))
+    counts[0] = correct_results(exp.laplace(counts[0], sensitivity, epsilon))
+    sums[0] = correct_results(exp.laplace(sums[0], sensitivity, epsilon))
+    counts[1] = correct_results(exp.laplace(counts[1], sensitivity, epsilon))
+    sums[1] = correct_results(exp.laplace(sums[1], sensitivity, epsilon))
 
     avg = [[0]*num_groups]*2
     for i in range(num_groups):
@@ -192,7 +187,7 @@ def general_count_query(dataset_group_by, field1: str):
         counts[j] += 1
     sensitivity = 2
     epsilon = 0.1
-    counts = correct_results(laplace(counts, sensitivity, epsilon))
+    counts = correct_results(exp.laplace(counts, sensitivity, epsilon))
     return counts, fields_result, interval
 
 # The user asks the distribution of field1 of patients who are aged between min_age and max_age
@@ -248,7 +243,7 @@ def single_constraint_query(dataset_group_by, field1: str, dataset_result, field
     if field2 != "AGE":
         sensitivity = 2
         epsilon = 0.1
-        counts = correct_results(laplace(counts, sensitivity, epsilon))
+        counts = correct_results(exp.laplace(counts, sensitivity, epsilon))
     return counts, fields_result, interval
 
 # The user asks the distribution of field1 of patients who satisfy field2 and field3 (gender and race)
@@ -293,5 +288,5 @@ def double_constraint_query(dataset_group_by, field1: str, dataset_result, field
                 counts[j] += 1
     sensitivity = 2
     epsilon = 0.1
-    counts = correct_results(laplace(counts, sensitivity, epsilon))
+    counts = correct_results(exp.laplace(counts, sensitivity, epsilon))
     return counts, fields_result, interval
