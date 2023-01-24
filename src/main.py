@@ -21,10 +21,12 @@ labs = dp.read_labs()
 
 font = {'size'   : 8}
 matplotlib.rc('font', **font)
+epsilon_budget=2.0
+
 
 #### QUERY TO CHARTS FUNCTION DEFINITIONS
 def AverageExamResultsToBarChartToCanvas(root, demo_title, exam_title):
-    averages, fields_result, interval = qs.avg_query(demographic, demo_title, examination, exam_title)
+    averages, fields_result, interval, epsilon = qs.avg_query(demographic, demo_title, examination, exam_title)
 
     figure = Figure()
     axes = figure.add_subplot()

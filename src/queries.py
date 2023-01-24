@@ -84,8 +84,9 @@ def avg_query(dataset_group_by, field1: str, dataset_result, field2: str):
 
     # EXAMPLE WAY OF FINDING OPTIMAL EPSILON, IMPLEMENT THIS OR A WAY YOU CAME UP WITH ON EVERY QUERY
     sensitivity = 2 
-    eps_values = [] #define a range of epsilon values that could work
+    eps_values = [0.005,0.008,0.01,0.03,0.05,0.1,0.15,0.2,0.3,0.4,0.5,0.8,1.0,1.3,1.5,1.8,2.0,3.0,5.0,8.0,10.0,15.0,19.999] #define a range of epsilon values that could work
     error_avg, error_mse, epsilon = exp.epsilon_experiment(counts, sensitivity, eps_values)
+    print("epsilon is ",epsilon)
     counts = correct_results(exp.laplace(counts, sensitivity, epsilon/2))
     sums = correct_results(exp.laplace(sums, sensitivity, epsilon/2))
     avg = [0]*num_groups

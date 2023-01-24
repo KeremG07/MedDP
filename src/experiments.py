@@ -28,6 +28,7 @@ def laplace(counts, sensitivity, epsilon):
 def epsilon_experiment(counts, sensitivity, eps_values: list):
     error_avg = []
     error_mse = []
+    epsilon=0
     for eps in eps_values:
         total_e_avg = 0
         total_e_mse = 0
@@ -41,6 +42,11 @@ def epsilon_experiment(counts, sensitivity, eps_values: list):
     # TODO: choose the best epsilon value here by looking at error values and return that as well
 
     #FOR EXAMPLE CHOOSE THE SMALLEST EPSILON VALUE THAT GIVES LESS THAN 5% ERROR FOR BOTH ERROR MEASUREMENTS
-    epsilon = 0
+    len_eps_values=len(eps_values)
+    for i in range(len_eps_values):
+        if (error_avg[i]<0.05 and error_mse[i]<0.05):
+            epsilon=eps_values[i]
+            break
+    
 
     return error_avg, error_mse, epsilon
