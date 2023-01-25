@@ -12,6 +12,10 @@ demographic = dp.read_demographic()
 examination = dp.read_examination()
 labs = dp.read_labs()
 
+## epsilon values
+eps_values = [0.005,0.008,0.01,0.03,0.05,0.1,0.15,0.2,0.3,0.4,0.5,0.8,1.0,1.3,1.5,1.8,2.0,3.0,5.0,8.0,10.0,15.0,19.999] #define a range of epsilon values that could work
+# create a global variable for epsilon budget
+eps_budget = 500
 
 ## Helper Functions
 
@@ -30,7 +34,12 @@ def aggregate_queries(results: list):
         result = np.add(result, l)
     sensitivity = 2
     epsilon = 0.1
+    #error_avg, error_mse, epsilon = exp.epsilon_experiment(counts, sensitivity, eps_values)
+    print("epsilon is ",epsilon)
     result = correct_results(exp.laplace(result, sensitivity, epsilon))
+    global eps_budget
+    eps_budget -= epsilon
+    print("Remaining epsilon budget is ", eps_budget)
     return correct_results(result)
 
 
@@ -84,7 +93,6 @@ def avg_query(dataset_group_by, field1: str, dataset_result, field2: str):
 
     # EXAMPLE WAY OF FINDING OPTIMAL EPSILON, IMPLEMENT THIS OR A WAY YOU CAME UP WITH ON EVERY QUERY
     sensitivity = 2 
-    eps_values = [0.005,0.008,0.01,0.03,0.05,0.1,0.15,0.2,0.3,0.4,0.5,0.8,1.0,1.3,1.5,1.8,2.0,3.0,5.0,8.0,10.0,15.0,19.999] #define a range of epsilon values that could work
     error_avg, error_mse, epsilon = exp.epsilon_experiment(counts, sensitivity, eps_values)
     print("epsilon is ",epsilon)
     counts = correct_results(exp.laplace(counts, sensitivity, epsilon/2))
@@ -93,6 +101,9 @@ def avg_query(dataset_group_by, field1: str, dataset_result, field2: str):
     for i in range(num_groups):
         if not counts[i] == 0:          #preventing divbyzero exception
             avg[i] = sums[i]/counts[i]
+    global eps_budget
+    eps_budget -= epsilon
+    print("Remaining epsilon budget is ", eps_budget)
     return avg, fields_result, interval, epsilon #this will now return epsilon to UI to handle budgeting
 
 # The user asks the average values of field2 of patients grouped by age and the output is a bidirectional graph showing both genders' histograms.
@@ -140,7 +151,9 @@ def avg_bi_histogram_query(dataset_result, field2: str):
                 counts[gender][j] += 1
                 sums[gender][j] += val
     sensitivity = 2
-    epsilon = 0.025
+    #epsilon = 0.025
+    error_avg, error_mse, epsilon = exp.epsilon_experiment(counts, sensitivity, eps_values)
+    print("epsilon is ",epsilon)
     counts[0] = correct_results(exp.laplace(counts[0], sensitivity, epsilon))
     sums[0] = correct_results(exp.laplace(sums[0], sensitivity, epsilon))
     counts[1] = correct_results(exp.laplace(counts[1], sensitivity, epsilon))
@@ -152,6 +165,9 @@ def avg_bi_histogram_query(dataset_result, field2: str):
             avg[0][i] = sums[0][i]/counts[0][i]
         if not counts[1][i] == 0:          #preventing divbyzero exception
             avg[1][i] = sums[1][i]/counts[1][i]
+    global eps_budget
+    eps_budget -= epsilon
+    print("Remaining epsilon budget is ", eps_budget)
     return avg, fields_result, interval
 
 # The user asks the distribution of field1 of ALL patients
@@ -189,8 +205,13 @@ def general_count_query(dataset_group_by, field1: str):
         j -= 1
         counts[j] += 1
     sensitivity = 2
-    epsilon = 0.1
+    #epsilon = 0.1
+    error_avg, error_mse, epsilon = exp.epsilon_experiment(counts, sensitivity, eps_values)
+    print("epsilon is ",epsilon)
     counts = correct_results(exp.laplace(counts, sensitivity, epsilon))
+    global eps_budget
+    eps_budget -= epsilon
+    print("Remaining epsilon budget is ", eps_budget)
     return counts, fields_result, interval
 
 # The user asks the distribution of field1 of patients who are aged between min_age and max_age
@@ -245,8 +266,13 @@ def single_constraint_query(dataset_group_by, field1: str, dataset_result, field
                 counts[j] += 1
     if field2 != "AGE":
         sensitivity = 2
-        epsilon = 0.1
+        #epsilon = 0.1
+        error_avg, error_mse, epsilon = exp.epsilon_experiment(counts, sensitivity, eps_values)
+        print("epsilon is ",epsilon)
         counts = correct_results(exp.laplace(counts, sensitivity, epsilon))
+    global eps_budget
+    eps_budget -= epsilon
+    print("Remaining epsilon budget is ", eps_budget)
     return counts, fields_result, interval
 
 # The user asks the distribution of field1 of patients who satisfy field2 and field3 (gender and race)
@@ -290,6 +316,11 @@ def double_constraint_query(dataset_group_by, field1: str, dataset_result, field
                 j -= 1
                 counts[j] += 1
     sensitivity = 2
-    epsilon = 0.1
+    #epsilon = 0.1
+    error_avg, error_mse, epsilon = exp.epsilon_experiment(counts, sensitivity, eps_values)
+    print("epsilon is ",epsilon)
     counts = correct_results(exp.laplace(counts, sensitivity, epsilon))
+    global eps_budget
+    eps_budget -= epsilon
+    print("Remaining epsilon budget is ", eps_budget)
     return counts, fields_result, interval

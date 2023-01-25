@@ -18,17 +18,20 @@ def calculate_mean_squared_error(actual_hist, noisy_hist):
     return total/bins
 
 # Applying differential privacy for count queries
+
+
 def laplace(counts, sensitivity, epsilon):
     noisy_counts = copy.deepcopy(counts)
     for i in range(len(counts)):
-        noise = np.random.laplace(loc = 0, scale = sensitivity/epsilon)
+        noise = np.random.laplace(loc=0, scale=sensitivity/epsilon)
         noisy_counts[i] = round(noisy_counts[i] + noise)
     return noisy_counts
+
 
 def epsilon_experiment(counts, sensitivity, eps_values: list):
     error_avg = []
     error_mse = []
-    epsilon=0
+    epsilon = 0
     for eps in eps_values:
         total_e_avg = 0
         total_e_mse = 0
@@ -41,12 +44,12 @@ def epsilon_experiment(counts, sensitivity, eps_values: list):
 
     # TODO: choose the best epsilon value here by looking at error values and return that as well
 
-    #FOR EXAMPLE CHOOSE THE SMALLEST EPSILON VALUE THAT GIVES LESS THAN 5% ERROR FOR BOTH ERROR MEASUREMENTS
-    len_eps_values=len(eps_values)
+    # FOR EXAMPLE CHOOSE THE SMALLEST EPSILON VALUE THAT GIVES LESS THAN 5% ERROR FOR BOTH ERROR MEASUREMENTS
+    goal_error = 0.30
+    len_eps_values = len(eps_values)
     for i in range(len_eps_values):
-        if (error_avg[i]<0.05 and error_mse[i]<0.05):
-            epsilon=eps_values[i]
+        if (error_avg[i] < goal_error):  # and error_mse[i] < goal_error):
+            epsilon = eps_values[i]
             break
-    
 
     return error_avg, error_mse, epsilon

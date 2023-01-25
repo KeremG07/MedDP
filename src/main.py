@@ -68,7 +68,7 @@ def AverageExamResultsToBarChartToCanvas(root, demo_title, exam_title):
 
 
 def AverageLabResultsToBarChartToCanvas(root, demo_title, lab_title):
-    averages, fields_result, interval = qs.avg_query(demographic, demo_title, labs, lab_title)
+    averages, fields_result, interval, epsilon = qs.avg_query(demographic, demo_title, labs, lab_title)
 
     figure = Figure()
     axes = figure.add_subplot()
