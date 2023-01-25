@@ -19,12 +19,22 @@ demographic = dp.read_demographic()
 examination = dp.read_examination()
 labs = dp.read_labs()
 
-font = {'size'   : 8}
+font = {'size' : 8}
 matplotlib.rc('font', **font)
+epsilon_budget=2.0                          ## BUNU SİL UFKUN ÖZALP
+
+def handle_buttons():
+    if qs.eps_budget <= 0:
+        bid_exam_lab_btn.config(state="disable")
+        avg_exam_demo_btn.config(state="disable")
+        dist_race_gend_btn.config(state="disable")
+        avg_lab_demo_btn.config(state="disable")
+        dist_age_btn.config(state="disable")
+        out_of_budget_label.grid()
 
 #### QUERY TO CHARTS FUNCTION DEFINITIONS
 def AverageExamResultsToBarChartToCanvas(root, demo_title, exam_title):
-    averages, fields_result, interval = qs.avg_query(demographic, demo_title, examination, exam_title)
+    averages, fields_result, interval, epsilon = qs.avg_query(demographic, demo_title, examination, exam_title)
 
     figure = Figure()
     axes = figure.add_subplot()
@@ -64,9 +74,11 @@ def AverageExamResultsToBarChartToCanvas(root, demo_title, exam_title):
     canvas.draw()
     canvas.get_tk_widget().place(x=400, y=150, height=300, width=500)
 
+    handle_buttons()
+
 
 def AverageLabResultsToBarChartToCanvas(root, demo_title, lab_title):
-    averages, fields_result, interval = qs.avg_query(demographic, demo_title, labs, lab_title)
+    averages, fields_result, interval, epsilon = qs.avg_query(demographic, demo_title, labs, lab_title)
 
     figure = Figure()
     axes = figure.add_subplot()
@@ -105,6 +117,8 @@ def AverageLabResultsToBarChartToCanvas(root, demo_title, lab_title):
     canvas = FigureCanvasTkAgg(figure, root)
     canvas.draw()
     canvas.get_tk_widget().place(x=400, y=150, height=300, width=500)
+
+    handle_buttons()
 
 
 def DistributionBasedOnRaceAndGenderToPieChartToCanvas(root, exam_lab_title, race_title, gend_title):
@@ -159,6 +173,8 @@ def DistributionBasedOnRaceAndGenderToPieChartToCanvas(root, exam_lab_title, rac
     canvas.draw()
     canvas.get_tk_widget().place(x=400, y=150, height=300, width=500)
 
+    handle_buttons()
+
 
 def DistributionBasedOnAgeRangeToPieChartToCanvas(root, exam_lab_title, age_lowerb, age_upperb):
     if not (int(age_lowerb) < int(age_upperb)):
@@ -183,6 +199,8 @@ def DistributionBasedOnAgeRangeToPieChartToCanvas(root, exam_lab_title, age_lowe
     canvas = FigureCanvasTkAgg(figure, root)
     canvas.draw()
     canvas.get_tk_widget().place(x=400, y=150, height=300, width=500)
+
+    handle_buttons()
 
 
 def BidirectionalAverageExamAndLabResultsToBidirectionalBarChartToCanvas(root, exam_lab_title):
@@ -217,6 +235,8 @@ def BidirectionalAverageExamAndLabResultsToBidirectionalBarChartToCanvas(root, e
     canvas = FigureCanvasTkAgg(figure, root)
     canvas.draw()
     canvas.get_tk_widget().place(x=400, y=150, height=300, width=500)
+
+    handle_buttons()
 
 
 #### WINDOW
@@ -337,6 +357,10 @@ tk.Label(root, text="Distribution of").grid(row = 19, column = 0, sticky = 'w', 
 bid_exam_lab_dwn.grid(row = 19, column = 1, sticky = 'w', padx = 5, pady = 2)
 tk.Label(root, text="over AGE and GENDER groups").grid(row = 20, column = 0, sticky = 'w', padx = 5, pady = 2)
 bid_exam_lab_btn.grid(row = 21, column = 1, sticky = 'w', padx = 5, pady = 2)
+
+out_of_budget_label = tk.Label(root, text="You are out of query budget. Cannot perform more queries. Buttons are disabled", font=("Helvetica 14 bold"), fg="red")
+out_of_budget_label.grid(row = 22, column = 2, sticky= 'w', padx = 5, pady = 2, columnspan=2)
+out_of_budget_label.grid_remove()
 
 ## END GRID PLACEMENT
 
