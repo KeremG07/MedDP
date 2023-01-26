@@ -15,7 +15,7 @@ def read_dataset(dataset_file: str):
     """
     result = []
     dataset_file = os.path.join(path, dataset_file)
-    print(dataset_file)
+    #print(dataset_file)
     with open(dataset_file) as f:
         records = csv.DictReader(f)
         for row in records:

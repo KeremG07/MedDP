@@ -21,7 +21,7 @@ labs = dp.read_labs()
 
 font = {'size' : 8}
 matplotlib.rc('font', **font)
-epsilon_budget=2.0                          ## BUNU SİL UFKUN ÖZALP
+
 
 def handle_buttons():
     if qs.eps_budget <= 0:
@@ -34,7 +34,7 @@ def handle_buttons():
 
 #### QUERY TO CHARTS FUNCTION DEFINITIONS
 def AverageExamResultsToBarChartToCanvas(root, demo_title, exam_title):
-    averages, fields_result, interval, epsilon = qs.avg_query(demographic, demo_title, examination, exam_title)
+    averages, fields_result, interval = qs.avg_query(demographic, demo_title, examination, exam_title)
 
     figure = Figure()
     axes = figure.add_subplot()
@@ -78,7 +78,7 @@ def AverageExamResultsToBarChartToCanvas(root, demo_title, exam_title):
 
 
 def AverageLabResultsToBarChartToCanvas(root, demo_title, lab_title):
-    averages, fields_result, interval, epsilon = qs.avg_query(demographic, demo_title, labs, lab_title)
+    averages, fields_result, interval = qs.avg_query(demographic, demo_title, labs, lab_title)
 
     figure = Figure()
     axes = figure.add_subplot()
@@ -162,8 +162,6 @@ def DistributionBasedOnRaceAndGenderToPieChartToCanvas(root, exam_lab_title, rac
     figure = Figure()
     axes = figure.add_subplot()
 
-    print(counts, fields_result)
-
     axes.pie(counts, labels=fields_result, autopct='%1.1f%%',
         shadow=True, startangle=90)
     axes.axis('equal')
@@ -244,7 +242,7 @@ def BidirectionalAverageExamAndLabResultsToBidirectionalBarChartToCanvas(root, e
 root = tk.Tk()
 root.title("MedDP")
 root.resizable = (False, False)
-root.geometry('950x650')
+root.geometry('950x750')
 
 frame = tk.Frame(root, width=811, height=165)
 frame.pack()
