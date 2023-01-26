@@ -5,6 +5,7 @@ from tkinter import ttk
 import matplotlib
 from PIL import ImageTk, Image
 import matplotlib.pyplot as plt
+import numpy as np
 
 matplotlib.use('TkAgg')
 
@@ -21,7 +22,6 @@ labs = dp.read_labs()
 
 font = {'size' : 8}
 matplotlib.rc('font', **font)
-
 
 def handle_buttons():
     if qs.eps_budget <= 0:
@@ -68,6 +68,7 @@ def AverageExamResultsToBarChartToCanvas(root, demo_title, exam_title):
     axes.set_axisbelow(True)
     axes.yaxis.grid(True, color='#EEEEEE')
     axes.xaxis.grid(False)
+    axes.set_ylim(np.min(averages) - np.mean(averages)/len(averages), np.max(averages) + np.mean(averages)/len(averages))
 
     axes.set_title(str('Average ' + exam_title + ' of patients grouped by ' + demo_title))
     canvas = FigureCanvasTkAgg(figure, root)
